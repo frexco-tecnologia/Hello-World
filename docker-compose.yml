@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  template-ms-db:
+    container_name: template-ms-db
+    image: mdillon/postgis
+    environment:
+      - POSTGRES_DB=location
+      - POSTGRES_USER=frexco
+      - POSTGRES_PASSWORD=40728a198f6a44beadaea1610299eb06
+    volumes:
+      - template-ms-db:/var/lib/postgresql/data
+
+  template-ms:
+    container_name: template-ms
+    build: ./docker/develop/.
+    ports:
+      - '3011:3000'
+    logging:
+      options:
+        max-size: '100M'
+    volumes:
+      - .:/app
+    depends_on:
+      - template-ms-db
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - TZ=America/Sao_Paulo
+      - JWT_SECRET_KEY=$JWT_SECRET_KEY
+
+      - DATABASE_HOST=template-ms-db
+      - DATABASE_DB=location
+      - DATABASE_USER=frexco
+      - DATABASE_PASSWORD=40728a198f6a44beadaea1610299eb06
+      - DATABASE_PORT=5432
+
+volumes:
+  template-ms-db:
+
+networks:
+  default:
+    external:
+      name: frexco
